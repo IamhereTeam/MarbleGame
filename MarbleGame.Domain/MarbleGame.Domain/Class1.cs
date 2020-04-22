@@ -15,9 +15,10 @@ namespace MarbleGame.Domain
         public MoveDirection[] Play(byte n, WallLocation[] walls, Hole[] holes, Marble[] marbles)
         {
             Board board = new Board(n);
-            board.AddWalls(walls);
-            board.AddHoles(holes);
-            board.AddMarbles(marbles);
+
+            board.AddWalls(walls)
+                .AddHoles(holes)
+                .AddMarbles(marbles);
 
             byte movesCount = 4;
             for (byte i = 0; i < movesCount; i++)
@@ -49,7 +50,40 @@ namespace MarbleGame.Domain
         }
     }
 
-    public class Board
+    public class LiftableBoard : IBoard
+    {
+        private readonly Board _board;
+
+        public LiftableBoard(Board board) : base()
+        {
+            this._board = board;
+        }
+
+        public Square this[byte row, byte column] => _board[row, column];
+
+        public IBoard AddHoles(Hole[] holes) => _board.AddHoles(holes);
+        public IBoard AddMarbles(Marble[] marbles) => _board.AddMarbles(marbles);
+        public IBoard AddWalls(WallLocation[] walls) => _board.AddWalls(walls);
+
+        public LiftableBoard LiftNorthSide()
+        {
+            return this;
+        }
+        public LiftableBoard LiftEastSide()
+        {
+            return this;
+        }
+        public LiftableBoard LiftSouthSide()
+        {
+            return this;
+        }
+        public LiftableBoard LiftWestSide()
+        {
+            return this;
+        }
+    }
+
+    public class Board : IBoard
     {
         private readonly byte _n;
         private Square[,] _squares;
@@ -59,9 +93,10 @@ namespace MarbleGame.Domain
             this._n = n;
             InitSquares();
         }
+
         public Square this[byte row, byte column] => _squares[row, column];
 
-        public void AddWalls(WallLocation[] walls)
+        public IBoard AddWalls(WallLocation[] walls)
         {
             foreach (var wall in walls)
             {
@@ -92,22 +127,25 @@ namespace MarbleGame.Domain
                     }
                 }
             }
+            return this;
         }
 
-        internal void AddHoles(Hole[] holes)
+        public IBoard AddHoles(Hole[] holes)
         {
             foreach (var hole in holes)
             {
                 _squares[hole.Location.Row, hole.Location.Column].Hole = hole;
             }
+            return this;
         }
 
-        internal void AddMarbles(Marble[] marbles)
+        public IBoard AddMarbles(Marble[] marbles)
         {
             foreach (var marble in marbles)
             {
                 _squares[marble.Location.Row, marble.Location.Column].Marble = marble;
             }
+            return this;
         }
 
         private void InitSquares()
@@ -121,6 +159,15 @@ namespace MarbleGame.Domain
                 }
             }
         }
+    }
+
+    public interface IBoard
+    {
+        Square this[byte row, byte column] { get; }
+
+        IBoard AddWalls(WallLocation[] walls);
+        IBoard AddHoles(Hole[] holes);
+        IBoard AddMarbles(Marble[] marbles);
     }
 
     public struct Square
