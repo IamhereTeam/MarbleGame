@@ -14,11 +14,16 @@ namespace MarbleGame.Domain
         /// <returns>She minimal number of moves to win the game</returns>
         public MoveDirection[] Play(byte n, WallLocation[] walls, Hole[] holes, Marble[] marbles)
         {
-            Board board = new Board(n);
+            IBoard board = new Board(n);
 
             board.AddWalls(walls)
                 .AddHoles(holes)
                 .AddMarbles(marbles);
+
+            ILiftableBoard liftableBoard = new LiftableBoard(board);
+
+            //liftableBoard.LiftNorthSide().LiftSouthSide()
+
 
             byte movesCount = 4;
             for (byte i = 0; i < movesCount; i++)
@@ -50,11 +55,11 @@ namespace MarbleGame.Domain
         }
     }
 
-    public class LiftableBoard : IBoard
+    public class LiftableBoard : ILiftableBoard
     {
-        private readonly Board _board;
+        private readonly IBoard _board;
 
-        public LiftableBoard(Board board) : base()
+        public LiftableBoard(IBoard board) : base()
         {
             this._board = board;
         }
@@ -65,22 +70,30 @@ namespace MarbleGame.Domain
         public IBoard AddMarbles(Marble[] marbles) => _board.AddMarbles(marbles);
         public IBoard AddWalls(WallLocation[] walls) => _board.AddWalls(walls);
 
-        public LiftableBoard LiftNorthSide()
+        public ILiftableBoard LiftNorthSide()
         {
             return this;
         }
-        public LiftableBoard LiftEastSide()
+        public ILiftableBoard LiftEastSide()
         {
             return this;
         }
-        public LiftableBoard LiftSouthSide()
+        public ILiftableBoard LiftSouthSide()
         {
             return this;
         }
-        public LiftableBoard LiftWestSide()
+        public ILiftableBoard LiftWestSide()
         {
             return this;
         }
+    }
+
+    public interface ILiftableBoard : IBoard
+    {
+        ILiftableBoard LiftNorthSide();
+        ILiftableBoard LiftEastSide();
+        ILiftableBoard LiftSouthSide();
+        ILiftableBoard LiftWestSide();
     }
 
     public class Board : IBoard
