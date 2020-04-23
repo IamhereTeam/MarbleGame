@@ -34,7 +34,6 @@ namespace MarbleGame.Domain
             caretaker.Backup();
 
             var movedMarbles = liftableBoard.LiftNorthSide();
-
             if (movedMarbles > 0)
             {
                 var gameState = liftableBoard.GetGameState();
@@ -56,42 +55,77 @@ namespace MarbleGame.Domain
             }
 
             caretaker.Undo();
+            caretaker.Backup();
 
-
-            var liftEastResult = liftableBoard.LiftEastSide();
-
-            if (liftEastResult.GameState == GameState.Moved)
+            if (liftableBoard.LiftEastSide() > 0)
             {
-                return "E" + Do(liftEastResult);
-            }
-            else if (liftEastResult.GameState == GameState.Won)
-            {
-                return "E";
-            }
+                var gameState = liftableBoard.GetGameState();
 
-            var liftSouthResult = liftableBoard.LiftSouthSide();
+                if (gameState == GameState.Won)
+                {
+                    s += "E_Won" + Environment.NewLine;
+                    caretaker.Undo();
+                    return s;
+                }
+                else if (gameState == GameState.Lost)
+                {
+                    s += "E_Lost" + Environment.NewLine;
+                    caretaker.Undo();
+                    return s;
+                }
 
-            if (liftSouthResult.GameState == GameState.Moved)
-            {
-                return "S" + Do(liftSouthResult);
-            }
-            else if (liftSouthResult.GameState == GameState.Won)
-            {
-                return "S";
+                s += "E" + Do(liftableBoard, caretaker, s);
             }
 
-            var liftWestResult = liftableBoard.LiftWestSide();
+            caretaker.Undo();
+            caretaker.Backup();
 
-            if (liftWestResult.GameState == GameState.Moved)
+            if (liftableBoard.LiftSouthSide() > 0)
             {
-                return "W" + Do(liftWestResult);
-            }
-            else if (liftWestResult.GameState == GameState.Won)
-            {
-                return "W";
+                var gameState = liftableBoard.GetGameState();
+
+                if (gameState == GameState.Won)
+                {
+                    s += "S_Won" + Environment.NewLine;
+                    caretaker.Undo();
+                    return s;
+                }
+                else if (gameState == GameState.Lost)
+                {
+                    s += "S_Lost" + Environment.NewLine;
+                    caretaker.Undo();
+                    return s;
+                }
+
+                s += "S" + Do(liftableBoard, caretaker, s);
             }
 
-            return "0";
+            caretaker.Undo();
+            caretaker.Backup();
+
+            if (liftableBoard.LiftWestSide() > 0)
+            {
+                var gameState = liftableBoard.GetGameState();
+
+                if (gameState == GameState.Won)
+                {
+                    s += "W_Won" + Environment.NewLine;
+                    caretaker.Undo();
+                    return s;
+                }
+                else if (gameState == GameState.Lost)
+                {
+                    s += "W_Lost" + Environment.NewLine;
+                    caretaker.Undo();
+                    return s;
+                }
+
+                s += "W" + Do(liftableBoard, caretaker, s);
+            }
+
+            caretaker.Undo();
+
+            return " -- 0 -- ";
         }
     }
 }
