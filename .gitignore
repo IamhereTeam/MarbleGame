@@ -6,3 +6,6 @@
 /MarbleGame.Domain/MarbleGame.Domain/bin/Debug/netstandard2.0
 /MarbleGame.Domain/MarbleGame.DomainTests/bin/Debug/netcoreapp3.1
 /MarbleGame.Domain/MarbleGame.DomainTests/obj
+/MarbleGame.Domain/.vs/MarbleGame.Domain/v16/TestStore/0
+/MarbleGame.Domain/.vs/MarbleGame.Domain/DesignTimeBuild/.dtbcache.v2
+/MarbleGame.Domain/MarbleGame.Domain/bin/Debug/netstandard2.1

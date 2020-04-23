@@ -21,5 +21,9 @@
         public bool EastWall { get; set; }
         public bool SouthWall { get; set; }
         public bool WesthWall { get; set; }
+
+        public bool IsEmpty => this.Marble == null;
+        public bool IsHole => this.Hole.HasValue && this.Hole.Value.IsEmpty;
+        public bool MarbleAvailable => this.Marble != null;
     }
 }

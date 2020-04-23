@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MarbleGame.Domain
 {
@@ -21,25 +22,41 @@ namespace MarbleGame.Domain
                 .AddMarbles(marbles);
 
             ILiftableBoard liftableBoard = new LiftableBoard(board);
+            Caretaker caretaker = new Caretaker(liftableBoard);
 
-            var s = Do(liftableBoard);
+            var s = Do(liftableBoard, caretaker, "");
 
             return s;
         }
 
-        private string Do(ILiftableBoard liftableBoard)
+        private string Do(ILiftableBoard liftableBoard, Caretaker caretaker, string s)
         {
-            var liftNorthResult = liftableBoard.LiftNorthSide();
+            caretaker.Backup();
 
-            if (liftNorthResult.GameState == GameState.Moved)
+            var movedMarbles = liftableBoard.LiftNorthSide();
+
+            if (movedMarbles > 0)
             {
-                return "N" + Do(liftNorthResult);
+                var gameState = liftableBoard.GetGameState();
+
+                if (gameState == GameState.Won)
+                {
+                    s += "N_Won" + Environment.NewLine;
+                    caretaker.Undo();
+                    return s;
+                }
+                else if (gameState == GameState.Lost)
+                {
+                    s += "N_Lost" + Environment.NewLine;
+                    caretaker.Undo();
+                    return s;
+                }
+
+                s += "N" + Do(liftableBoard, caretaker, s);
             }
-            else if (liftNorthResult.GameState == GameState.Won)
-            {
-                return "N";
-            }
-            // if None or Lost lift another side
+
+            caretaker.Undo();
+
 
             var liftEastResult = liftableBoard.LiftEastSide();
 

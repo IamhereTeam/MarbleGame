@@ -10,36 +10,123 @@
         }
 
         public Square this[byte row, byte column] => _board[row, column];
+        public byte Length => _board.Length;
 
         public IBoard AddHoles(Hole[] holes) => _board.AddHoles(holes);
         public IBoard AddMarbles(Marble[] marbles) => _board.AddMarbles(marbles);
         public IBoard AddWalls(WallLocation[] walls) => _board.AddWalls(walls);
+        public IBoard MoveMarble(byte row, byte col, byte destRow, byte destCol) => _board.MoveMarble(row, col, destRow, destCol);
+        public IBoardMemento Save() => this.Save();
+        public void Restore(IBoardMemento memento) => this.Restore(memento);
 
-        public ILiftableBoard LiftNorthSide()
+        public byte LiftNorthSide()
         {
-            return this;
+            byte movedMarbles = 0;
+            for (byte row = Length; row < 1; row--)
+            {
+                for (byte col = 0; col < Length; col++)
+                {
+                    byte upperRow = (byte)(row - 1);
+                    if (this[upperRow, col].MarbleAvailable && this[row, col].IsEmpty && !this[upperRow, col].SouthWall)
+                    {
+                        _board.MoveMarble(upperRow, col, row, col);
+                        movedMarbles++;
+                    }
+                }
+            }
+
+            return movedMarbles;
         }
-        public ILiftableBoard LiftEastSide()
+        public byte LiftEastSide()
         {
-            return this;
+            byte movedMarbles = 0;
+            for (byte col = 0; col < Length-1; col++)
+            {
+                for (byte row = 0; row < Length; row++)
+                {
+                    byte upperCol = (byte)(col + 1);
+                    if (this[upperCol, col].MarbleAvailable && this[row, col].IsEmpty && !this[upperCol, col].SouthWall)
+                    {
+                        _board.MoveMarble(upperCol, col, row, col);
+                        movedMarbles++;
+                    }
+                }
+            }
+
+            return movedMarbles;
         }
-        public ILiftableBoard LiftSouthSide()
+        public byte LiftSouthSide()
         {
-            return this;
+            byte movedMarbles = 0;
+            for (byte row = 0; row < Length - 1; row++)
+            {
+                for (byte col = 0; col < Length; col++)
+                {
+                    byte upperRow = (byte)(row + 1);
+                    if (this[upperRow, col].MarbleAvailable && this[row, col].IsEmpty && !this[upperRow, col].NorthWall)
+                    {
+                        _board.MoveMarble(upperRow, col, row, col);
+                        movedMarbles++;
+                    }
+                }
+            }
+
+            return movedMarbles;
         }
-        public ILiftableBoard LiftWestSide()
+        public byte LiftWestSide()
         {
-            return this;
+            byte movedMarbles = 0;
+            for (byte col = Length; col < 1; col--)
+            {
+                for (byte row = 0; row < Length; row++)
+                {
+                    byte upperCol = (byte)(col - 1);
+                    if (this[upperCol, col].MarbleAvailable && this[row, col].IsEmpty && !this[upperCol, col].SouthWall)
+                    {
+                        _board.MoveMarble(upperCol, col, row, col);
+                        movedMarbles++;
+                    }
+                }
+            }
+
+            return movedMarbles;
         }
 
-        public GameState GameState { get; }
+        public GameState GetGameState()
+        {
+            byte matchCount = 0;
+            byte holeCount = 0;
+
+            for (byte row = 0; row < Length; row++)
+            {
+                for (byte col = 0; col < Length; col++)
+                {
+                    if (this[row, col].IsHole)
+                    {
+                        holeCount++;
+                        if (!this[row, col].Hole.Value.IsEmpty)
+                        {
+                            if (this[row, col].Hole.Value.Id != this[row, col].Hole.Value.Marble.Value.Id)
+                            {
+                                return GameState.Lost;
+                            }
+                            else
+                            {
+                                matchCount++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return matchCount == holeCount ? GameState.Won : GameState.None;
+        }
     }
 
     public enum GameState : byte
     {
         None,
         Won,
-        Lost,
-        Moved,
+        Lost
     }
 }

@@ -2,11 +2,11 @@
 {
     public interface ILiftableBoard : IBoard
     {
-        ILiftableBoard LiftNorthSide();
-        ILiftableBoard LiftEastSide();
-        ILiftableBoard LiftSouthSide();
-        ILiftableBoard LiftWestSide();
+        byte LiftNorthSide();
+        byte LiftEastSide();
+        byte LiftSouthSide();
+        byte LiftWestSide();
 
-        GameState GameState { get; }
+        GameState GetGameState();
     }
 }

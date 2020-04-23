@@ -12,6 +12,14 @@ namespace MarbleGame.Domain.Tests
         [TestMethod()]
         public void PlayTest()
         {
+            Square square = new Square(2, 2, true, true, true, true);
+            Square[,] _squares = new Square[2, 2];
+            _squares[0, 0] = square;
+
+            Square[,] _squares2 = (Square[,])_squares.Clone();
+
+            _squares[1, 1] = square;
+
             // the size of the board (2 ≤ N ≤ 40) 
             byte N = 4;
             // the number of marbles (M > 0)

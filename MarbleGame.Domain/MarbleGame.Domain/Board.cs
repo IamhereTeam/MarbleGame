@@ -1,9 +1,13 @@
-﻿namespace MarbleGame.Domain
+﻿using System;
+
+namespace MarbleGame.Domain
 {
     public class Board : IBoard
     {
-        private readonly byte _n;
+        private byte _n;
         private Square[,] _squares;
+
+        public byte Length => _n;
 
         public Board(byte n)
         {
@@ -75,6 +79,38 @@
                     _squares[row, col] = new Square(row, col, row == 0, col == _n - 1, row == _n - 1, col == 0);
                 }
             }
+        }
+
+        public IBoard MoveMarble(byte row, byte col, byte destRow, byte destCol)
+        {
+            if (_squares[destRow, destCol].IsHole)
+            {
+                _squares[destRow, destCol].Hole.Value.AddMarble(_squares[row, col].Marble.Value);
+            }
+            else
+            {
+                _squares[destRow, destCol].Marble = _squares[row, col].Marble;
+            }
+            _squares[row, col].Marble = null;
+
+            return this;
+        }
+
+
+        public IBoardMemento Save()
+        {
+            return new BoardMemento(this._squares, this._n);
+        }
+
+        public void Restore(IBoardMemento memento)
+        {
+            if (!(memento is BoardMemento))
+            {
+                throw new Exception("Unknown memento class " + memento.ToString());
+            }
+
+            this._squares = memento.GetSquares();
+            this._n = memento.GetN();
         }
     }
 }
