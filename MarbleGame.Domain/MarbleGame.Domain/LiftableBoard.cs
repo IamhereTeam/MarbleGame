@@ -31,5 +31,15 @@
         {
             return this;
         }
+
+        public GameState GameState { get; }
+    }
+
+    public enum GameState : byte
+    {
+        None,
+        Won,
+        Lost,
+        Moved,
     }
 }

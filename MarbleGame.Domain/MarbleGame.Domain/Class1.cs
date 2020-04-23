@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace MarbleGame.Domain
 {
@@ -12,7 +12,7 @@ namespace MarbleGame.Domain
         /// <param name="holes">locations of the holes</param>
         /// <param name="marbles">locations of the marbles</param>
         /// <returns>She minimal number of moves to win the game</returns>
-        public MoveDirection[] Play(byte n, WallLocation[] walls, Hole[] holes, Marble[] marbles)
+        public string Play(byte n, WallLocation[] walls, Hole[] holes, Marble[] marbles)
         {
             IBoard board = new Board(n);
 
@@ -22,36 +22,59 @@ namespace MarbleGame.Domain
 
             ILiftableBoard liftableBoard = new LiftableBoard(board);
 
-            //liftableBoard.LiftNorthSide().LiftSouthSide()
+            var s = Do(liftableBoard);
 
-
-            byte movesCount = 4;
-            for (byte i = 0; i < movesCount; i++)
-            {
-                MoveDirection moveDirection = (MoveDirection)i;
-
-                // Lift South Side
-                var d = MoveNorth(n, walls, holes, marbles);
-            }
-
-            return null;
+            return s;
         }
 
-        private bool MoveNorth(byte n, WallLocation[] walls, Hole[] holes, Marble[] marbles)
+        private string Do(ILiftableBoard liftableBoard)
         {
-            foreach (var marbel in marbles)
+            var liftNorthResult = liftableBoard.LiftNorthSide();
+
+            if (liftNorthResult.GameState == GameState.Moved)
             {
-                //marbel.Location.
+                return "N" + Do(liftNorthResult);
+            }
+            else if (liftNorthResult.GameState == GameState.Won)
+            {
+                return "N";
+            }
+            // if None or Lost lift another side
 
+            var liftEastResult = liftableBoard.LiftEastSide();
 
+            if (liftEastResult.GameState == GameState.Moved)
+            {
+                return "E" + Do(liftEastResult);
+            }
+            else if (liftEastResult.GameState == GameState.Won)
+            {
+                return "E";
             }
 
-            for (int row = n - 1; row >= 0; row--)
-            {
+            var liftSouthResult = liftableBoard.LiftSouthSide();
 
+            if (liftSouthResult.GameState == GameState.Moved)
+            {
+                return "S" + Do(liftSouthResult);
+            }
+            else if (liftSouthResult.GameState == GameState.Won)
+            {
+                return "S";
             }
 
-            return false;
+            var liftWestResult = liftableBoard.LiftWestSide();
+
+            if (liftWestResult.GameState == GameState.Moved)
+            {
+                return "W" + Do(liftWestResult);
+            }
+            else if (liftWestResult.GameState == GameState.Won)
+            {
+                return "W";
+            }
+
+            return "0";
         }
     }
 }

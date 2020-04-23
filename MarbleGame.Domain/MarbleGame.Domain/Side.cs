@@ -1,6 +1,6 @@
 ﻿namespace MarbleGame.Domain
 {
-    public enum MoveDirection : byte
+    public enum Side : byte
     {
         North,
         East,

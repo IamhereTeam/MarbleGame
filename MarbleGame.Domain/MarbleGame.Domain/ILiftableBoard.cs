@@ -6,5 +6,7 @@
         ILiftableBoard LiftEastSide();
         ILiftableBoard LiftSouthSide();
         ILiftableBoard LiftWestSide();
+
+        GameState GameState { get; }
     }
 }
