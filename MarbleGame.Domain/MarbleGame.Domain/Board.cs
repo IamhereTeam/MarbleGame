@@ -83,9 +83,9 @@ namespace MarbleGame.Domain
 
         public IBoard MoveMarble(byte row, byte col, byte destRow, byte destCol)
         {
-            if (_squares[destRow, destCol].IsHole)
+            if (_squares[destRow, destCol].IsEmptyHole)
             {
-                _squares[destRow, destCol].Hole.Value.AddMarble(_squares[row, col].Marble.Value);
+                _squares[destRow, destCol].Hole.AddMarble(_squares[row, col].Marble);
             }
             else
             {
@@ -112,5 +112,42 @@ namespace MarbleGame.Domain
             this._squares = memento.GetSquares();
             this._n = memento.GetN();
         }
+
+        public override string ToString()
+        {
+            string strView = "";
+
+            for (byte row = 0; row < Length; row++)
+            {
+                for (byte col = 0; col < Length; col++)
+                {
+                    if (this[row, col].IsHole)
+                    {
+                        if (this[row, col].IsEmptyHole)
+                        {
+                            strView += "○";
+                            continue;
+                        }
+                        else
+                        {
+                            strView += "◙";
+                            continue;
+                        }
+                    }
+                    else if (this[row, col].Marble != null)
+                    {
+                        strView += "●";
+                        continue;
+                    }
+
+                    strView += "□";
+                }
+                strView += Environment.NewLine;
+            }
+
+            return strView;
+        }
+
+        //⓪ ① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨
     }
 }

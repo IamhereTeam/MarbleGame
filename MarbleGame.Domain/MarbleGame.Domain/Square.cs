@@ -1,6 +1,8 @@
-﻿namespace MarbleGame.Domain
+﻿using System;
+
+namespace MarbleGame.Domain
 {
-    public struct Square
+    public class Square : ICloneable
     {
         public Square(byte row, byte column, bool northWall, bool eastWall, bool southWall, bool westhWall)
         {
@@ -14,8 +16,8 @@
         }
 
         public Location Location { get; set; }
-        public Marble? Marble { get; set; }
-        public Hole? Hole { get; set; }
+        public Marble Marble { get; set; }
+        public Hole Hole { get; set; }
 
         public bool NorthWall { get; set; }
         public bool EastWall { get; set; }
@@ -23,7 +25,17 @@
         public bool WesthWall { get; set; }
 
         public bool IsEmpty => this.Marble == null;
-        public bool IsHole => this.Hole.HasValue && this.Hole.Value.IsEmpty;
+        public bool IsHole => this.Hole != null;
+        public bool IsEmptyHole => this.Hole != null && this.Hole.IsEmpty;
         public bool MarbleAvailable => this.Marble != null;
+
+        public object Clone()
+        {
+            return new Square(Location.Row, Location.Column, NorthWall, EastWall, SouthWall, WesthWall)
+            {
+                Marble = (Marble)Marble?.Clone(),
+                Hole = (Hole)Hole?.Clone()
+            };
+        }
     }
 }

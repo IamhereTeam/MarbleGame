@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MarbleGame.Domain
 {
@@ -17,26 +18,35 @@ namespace MarbleGame.Domain
         {
             IBoard board = new Board(n);
 
+            Debug.WriteLine(board.ToString());
+
             board.AddWalls(walls)
                 .AddHoles(holes)
                 .AddMarbles(marbles);
 
+            Debug.WriteLine(board.ToString());
+
             ILiftableBoard liftableBoard = new LiftableBoard(board);
             Caretaker caretaker = new Caretaker(liftableBoard);
 
-            var s = Do(liftableBoard, caretaker, "");
+            var result = Do(liftableBoard, caretaker, "");
 
-            return s;
+            Debug.WriteLine(result);
+
+            return result;
         }
 
-        private string Do(ILiftableBoard liftableBoard, Caretaker caretaker, string s)
+        private string Do(ILiftableBoard board, Caretaker caretaker, string s)
         {
+            Debug.WriteLine(board.ToString());
             caretaker.Backup();
 
-            var movedMarbles = liftableBoard.LiftNorthSide();
+            var movedMarbles = board.LiftNorthSide();
+            Debug.WriteLine(board.ToString());
+
             if (movedMarbles > 0)
             {
-                var gameState = liftableBoard.GetGameState();
+                var gameState = board.GetGameState();
 
                 if (gameState == GameState.Won)
                 {
@@ -46,20 +56,25 @@ namespace MarbleGame.Domain
                 }
                 else if (gameState == GameState.Lost)
                 {
-                    s += "N_Lost" + Environment.NewLine;
-                    caretaker.Undo();
-                    return s;
+                    //s += "N_Lost" + Environment.NewLine;
+                    //caretaker.Undo();
+                    //return s;
                 }
-
-                s += "N" + Do(liftableBoard, caretaker, s);
+                else if (gameState == GameState.None)
+                {
+                    s += "N" + Do(board, caretaker, s);
+                }
             }
+            Debug.WriteLine(board.ToString());
 
             caretaker.Undo();
             caretaker.Backup();
+            Debug.WriteLine(board.ToString());
 
-            if (liftableBoard.LiftEastSide() > 0)
+            if (board.LiftEastSide() > 0)
             {
-                var gameState = liftableBoard.GetGameState();
+                Debug.WriteLine(board.ToString());
+                var gameState = board.GetGameState();
 
                 if (gameState == GameState.Won)
                 {
@@ -69,20 +84,26 @@ namespace MarbleGame.Domain
                 }
                 else if (gameState == GameState.Lost)
                 {
-                    s += "E_Lost" + Environment.NewLine;
-                    caretaker.Undo();
-                    return s;
+                    //s += "E_Lost" + Environment.NewLine;
+                    //caretaker.Undo();
+                    //return s;
                 }
-
-                s += "E" + Do(liftableBoard, caretaker, s);
+                else if (gameState == GameState.None)
+                {
+                    s += "E" + Do(board, caretaker, s);
+                }
             }
+
+            Debug.WriteLine(board.ToString());
 
             caretaker.Undo();
             caretaker.Backup();
+            Debug.WriteLine(board.ToString());
 
-            if (liftableBoard.LiftSouthSide() > 0)
+            if (board.LiftSouthSide() > 0)
             {
-                var gameState = liftableBoard.GetGameState();
+                Debug.WriteLine(board.ToString());
+                var gameState = board.GetGameState();
 
                 if (gameState == GameState.Won)
                 {
@@ -92,20 +113,25 @@ namespace MarbleGame.Domain
                 }
                 else if (gameState == GameState.Lost)
                 {
-                    s += "S_Lost" + Environment.NewLine;
-                    caretaker.Undo();
-                    return s;
+                    //s += "S_Lost" + Environment.NewLine;
+                    //caretaker.Undo();
+                    //return s;
                 }
-
-                s += "S" + Do(liftableBoard, caretaker, s);
+                else if (gameState == GameState.None)
+                {
+                    s += "S" + Do(board, caretaker, s);
+                }
             }
+            Debug.WriteLine(board.ToString());
 
             caretaker.Undo();
             caretaker.Backup();
+            Debug.WriteLine(board.ToString());
 
-            if (liftableBoard.LiftWestSide() > 0)
+            if (board.LiftWestSide() > 0)
             {
-                var gameState = liftableBoard.GetGameState();
+                Debug.WriteLine(board.ToString());
+                var gameState = board.GetGameState();
 
                 if (gameState == GameState.Won)
                 {
@@ -115,15 +141,19 @@ namespace MarbleGame.Domain
                 }
                 else if (gameState == GameState.Lost)
                 {
-                    s += "W_Lost" + Environment.NewLine;
-                    caretaker.Undo();
-                    return s;
+                    //s += "W_Lost" + Environment.NewLine;
+                    //caretaker.Undo();
+                    //return s;
                 }
-
-                s += "W" + Do(liftableBoard, caretaker, s);
+                else if (gameState == GameState.None)
+                {
+                    s += "W" + Do(board, caretaker, s);
+                }
             }
+            Debug.WriteLine(board.ToString());
 
             caretaker.Undo();
+            Debug.WriteLine(board.ToString());
 
             return " -- 0 -- ";
         }
